@@ -1,3 +1,5 @@
+require 'yaml'
+
 class Game
 
     attr_accessor :solve_word, :letters_guessed, :guesses_remaining, :current_puzzle
@@ -24,7 +26,31 @@ class Game
     end
 
     def display
+        puts "The current puzzle is #{@current_puzzle.join}. You have guessed #{@letters_guessed}. You have #{@guesses_remaining} guesses remaining #{solve_word}"
+    end
 
+    def check_guess(solve_word, guess_letter)
+        solve_word.each_char.with_index do |letter, index|
+            if letter == guess_letter
+                @current_puzzle[index] = guess_letter
+            end
+        end
+        @letters_guessed.push(guess_letter)
+        @guesses_remaining -= 1
+        display()
     end
 
 end
+
+class Player
+
+    def guess_letter
+        puts "Please input a letter to guess. You may also input 'save' or 'load'"
+        letter = gets.chomp.downcase
+    end
+
+end
+
+game = Game.new
+player = Player.new
+game.check_guess(game.solve_word, player.guess_letter)
