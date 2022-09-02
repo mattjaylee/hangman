@@ -38,8 +38,21 @@ class Game
 
     def play_turn
         letter = @player.guess_letter
+        check_letter(letter)
         check_guess(@solve_word, letter)
         play_turn()
+    end
+
+    def check_letter(letter)
+        case letter
+        when 'save' 
+            save()
+            puts "GAME PROGRESS SAVED SUCCESSFULLY AS GAME #{game_id}"
+            play_turn()
+        when 'load' then load()
+        when 'a'..'z' then letter
+        else play_turn()
+        end
     end
 
     def check_guess(solve_word, guess_letter)
@@ -66,13 +79,19 @@ class Game
     end
 
     def save
-        YAML.dump ({
+        data = YAML.dump ({
             :solve_word => @solve_word,
             :letters_guessed => @letters_guessed,
             :guesses_remaining => @guesses_remaining,
             :current_puzzle => @current_puzzle,
             :game_id => @game_id
         })
+        if Dir.exists?("saved_games")
+            File.write("./saved_games/#{game_id}", data)
+        else
+            Dir.mkdir("saved_games")
+            File.write("./saved_games/#{game_id}", data)
+        end
     end
 
     def load(save_file)
